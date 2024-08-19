@@ -1,3 +1,4 @@
+from lxml import etree, objectify
 from datetime import datetime
 import sys, os, json, requests, fake_useragent 
 from art import tprint
@@ -83,8 +84,25 @@ def main():
         pc("[-] menu is False", 1)
         return False
     
-    # ----- to xml
+    # ----- to xml -----
+    today = datetime.today()
+    today_format = today.strftime("%Y-%m-%dT%H:%M:%S%Z")
+    pageYmlCatalog = etree.Element('yml_catalog', date=str(today_format))
     
+    doc = etree.ElementTree(pageYmlCatalog)
+
+    # add the subelements
+    pageElementShop = etree.SubElement(pageYmlCatalog, 'shop')
+
+    # for multiple multiple attributes, use as shown above
+    etree.SubElement(pageElementShop, 'name').text = place['name']
+    etree.SubElement(pageElementShop, 'company').text = place['footerDescription']
+    etree.SubElement(pageElementShop, 'url').text = place['sharedLink']
+
+    obj_xml = etree.tostring(doc, xml_declaration=True, encoding='utf-8')
+
+    with open(f'./xml/x_{get_palce_slug}.xml', 'wb') as xml_writer:
+        xml_writer.write(obj_xml)
 
     #--------- quit code
     pc(f'[+] lead time {str(datetime.now()-start)}', 3)
