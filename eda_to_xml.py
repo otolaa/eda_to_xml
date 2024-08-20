@@ -1,3 +1,4 @@
+from typing import Dict, List
 from lxml import etree, objectify
 from datetime import datetime
 import sys, os, json, requests, fake_useragent 
@@ -13,12 +14,18 @@ def get_json(url_page):
         print(sys.exc_info()[1])
         return False  
 
-def set_xml():
-    pass
+def get_modifiers_groups(menu: Dict) -> list:
+    m_groups = []
+    for m in menu:
+        for item_ in m['items']:
+            if 'optionsGroups' not in item_:
+                continue
+            if len(item_['optionsGroups']) == 0:
+                continue
+            for option in item_['optionsGroups']:
+                m_groups.append(option)
 
-def t_color(text, color_num = 2):
-    ''' color text '''
-    return f'\033[3{color_num}m{text}\033[0m'
+    return m_groups
 
 def get_place(url_brand_slug, get_palce_slug):
     data_json = get_json(url_brand_slug)
@@ -96,13 +103,41 @@ def main():
 
     # for multiple multiple attributes, use as shown above
     etree.SubElement(pageElementShop, 'name').text = place['name']
-    etree.SubElement(pageElementShop, 'company').text = place['footerDescription']
+    etree.SubElement(pageElementShop, 'company').text = f"<![CDATA[{place['footerDescription']}]]>"
     etree.SubElement(pageElementShop, 'url').text = place['sharedLink']
+    
+    # add delivery_conditions ?!
+    etree.SubElement(pageElementShop, 'deliveryConditions').text = place['deliveryConditions']
 
-    obj_xml = etree.tostring(doc, xml_declaration=True, encoding='utf-8')
+    # add currency
+    currenciesElem = etree.SubElement(pageElementShop, 'currencies')
+    etree.SubElement(currenciesElem, 'currency', id=place['currency']['code'], rate='1')
 
-    with open(f'./xml/x_{get_palce_slug}.xml', 'wb') as xml_writer:
-        xml_writer.write(obj_xml)
+    # add tags ?!
+    if 'tags' in place and len(place['tags']):
+        tags_elem = etree.SubElement(pageElementShop, 'tags')
+        for t_ in place['tags']:
+            etree.SubElement(tags_elem, 'tag', id=str(t_['id'])).text = t_['name']
+
+    # add categories
+    categoryElement = etree.SubElement(pageElementShop, 'categories')
+    for c_item in menu:
+        id_item = str(c_item['id']) if 'id' in c_item else str(161803)
+        etree.SubElement(categoryElement, 'category', id=id_item).text = c_item['name']
+    
+    # add modifiersGroups
+    modifiersGroups = etree.SubElement(pageElementShop, 'modifiersGroups')
+    for m_group in get_modifiers_groups(menu):
+        modifiersGroup = etree.SubElement(modifiersGroups, 'modifiersGroup', id = str(m_group['id']), required=str(m_group['required']).lower())
+        etree.SubElement(modifiersGroup, 'name').text = m_group['name']
+        etree.SubElement(modifiersGroup, 'type').text = 'all_one' if 'multiplier' in m_group['options'][0] else 'one_one' # all_one, one_one
+        etree.SubElement(modifiersGroup, 'minimum').text = str(m_group['minSelected'])
+        etree.SubElement(modifiersGroup, 'maximum').text = str(m_group['maxSelected'])
+
+    # write file
+    obj_xml = etree.tostring(doc, xml_declaration=True, encoding='utf-8')    
+    with open(f'./xml/x_{get_palce_slug}_{get_region_id}.xml', 'wb') as f:
+        f.write(obj_xml)
 
     #--------- quit code
     pc(f'[+] lead time {str(datetime.now()-start)}', 3)

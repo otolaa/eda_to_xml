@@ -8,6 +8,10 @@ def pc(text_code, color_num = 2):
     ''' color_num: 0-grey, 1-red, 2-green, 3-yellow, 4-blue, 5-ping, 6=4-blue '''
     print(f'\033[3{color_num}m{text_code}\033[0m', end='\n')
 
+def t_color(text, color_num = 2):
+    ''' color text '''
+    return f'\033[3{color_num}m{text}\033[0m'
+
 def wtf(html, pg):
     with open(f'./html/html{pg}.txt', "w", encoding='utf8') as f:
         f.write(html)

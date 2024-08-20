@@ -1,6 +1,6 @@
-## eda.yandex to xml
+## eda.yandex to xml - file
 
-0 - parse detaul page and to xml
+This script parse detail - page and write to xml - file
 
 ```
  # 0 - brand place company
@@ -15,11 +15,11 @@ https://eda.yandex.ru/web-api/seo-meta-tags?longitude=37.38758568101073&latitude
 # 3 - region country
 https://eda.yandex.ru/web-api/initial-server-data?lang=ru&asset=desktop&serviceBrand=yandex
 
-# 4 - detail
+# 4 - detail - page
 https://eda.yandex.ru/r/tashir_gnorv?placeSlug=tashir_2d8q5
 ```
 
-1 - start script
+Start script
 ```
 $ python3 eda_to_xml.py
 ```
