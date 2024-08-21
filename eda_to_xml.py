@@ -127,12 +127,49 @@ def main():
     
     # add modifiersGroups
     modifiersGroups = etree.SubElement(pageElementShop, 'modifiersGroups')
-    for m_group in get_modifiers_groups(menu):
+    g_mg = get_modifiers_groups(menu)
+    for m_group in g_mg:
         modifiersGroup = etree.SubElement(modifiersGroups, 'modifiersGroup', id = str(m_group['id']), required=str(m_group['required']).lower())
         etree.SubElement(modifiersGroup, 'name').text = m_group['name']
         etree.SubElement(modifiersGroup, 'type').text = 'all_one' if 'multiplier' in m_group['options'][0] else 'one_one' # all_one, one_one
         etree.SubElement(modifiersGroup, 'minimum').text = str(m_group['minSelected'])
         etree.SubElement(modifiersGroup, 'maximum').text = str(m_group['maxSelected'])
+
+    # add modifiers
+    modifierList = etree.SubElement(pageElementShop, 'modifiers')
+    for m_modi in g_mg:
+        if 'options' not in m_modi:
+            continue
+
+        for m_modifier in m_modi['options']:
+            modifierElem = etree.SubElement(modifierList, 'modifier', id=str(m_modifier['id']))
+            etree.SubElement(modifierElem, 'name').text = m_modifier['name']
+            etree.SubElement(modifierElem, 'price').text = f"+{str(m_modifier['price'])}"
+            etree.SubElement(modifierElem, 'modifiersGroupId').text = str(m_modi['id'])
+
+    # add offers
+    offersElement = etree.SubElement(pageElementShop, 'offers')
+    for m_items in menu:
+        if 'items' not in m_items:
+            continue
+        # get id category
+        id_category = str(m_items['id']) if 'id' in m_items else str(161803)        
+        # add offer
+        for offer in m_items['items']:
+            offerElem = etree.SubElement(offersElement, 'offer', id=str(offer['id']))
+            etree.SubElement(offerElem, 'name').text = offer['name']
+            
+            if 'description' in offer:
+                etree.SubElement(offerElem, 'description').text = offer['description']
+            
+            etree.SubElement(offerElem, 'price').text = str(offer['price'])
+            etree.SubElement(offerElem, 'picture').text = f"https://eda.yandex{str(offer['picture']['uri']).replace('{w}','400').replace('{h}','400')}"
+            etree.SubElement(offerElem, 'categoryId').text = id_category
+
+            if 'optionsGroups' in offer and len(offer['optionsGroups']):
+                mGroupsIds = etree.SubElement(offerElem, 'modifiersGroupsIds')
+                for o_modifier in offer['optionsGroups']:
+                    etree.SubElement(mGroupsIds, 'modifiersGroupId').text = str(o_modifier['id'])
 
     # write file
     obj_xml = etree.tostring(doc, xml_declaration=True, encoding='utf-8')    
