@@ -57,6 +57,16 @@ def get_menu(url_menu, get_palce_slug):
     
     return menu
 
+def is_int(rid) -> bool:
+    try:
+        rid = int(rid)
+        if isinstance(rid, int) is False:
+            return False
+    except Exception as e:
+        return False
+    
+    return True
+
 def main():
     start = datetime.now()
     #--------- the code
@@ -68,12 +78,7 @@ def main():
     t_input_region = t_color('[+] input id region: ', 3)
     get_region_id = input(t_input_region)
 
-    try:
-        rid = int(get_region_id)
-        if isinstance(rid, int) is False:
-            pc(f'[-] region is not integer ?!', 1)
-            return False
-    except Exception as e:
+    if is_int(get_region_id) is False:
         pc(f'[-] region is not integer ?!', 1)
         return False
 
