@@ -62,13 +62,11 @@ def main():
     #--------- the code
     tprint('EDA>>TO>>XML', font='bulbhead')
 
-    # t_input = t_color('[+] input slug: ', 3)
-    # get_palce_slug = input(t_input)
-    get_palce_slug = 'tashir_gnorv'
+    t_input = t_color('[+] input slug: ', 3)
+    get_palce_slug = input(t_input)
 
-    # t_input_region = t_color('[+] input id region: ', 3)
-    # get_region_id = input(t_input_region)
-    get_region_id = int('1')
+    t_input_region = t_color('[+] input id region: ', 3)
+    get_region_id = input(t_input_region)
 
     pc(f'[+] brand_slug: {get_palce_slug}', color_num=6)
     pc(f'[+] region_id: {get_region_id}', color_num=6)
@@ -180,11 +178,21 @@ def main():
                 ''' Единица измерения — килограммы. 
                 Можно дроби: разделитель — точка или запятая, 
                 не больше трех цифр после него. '''
-                measure_value = offer['measure']['value']
-                if offer['measure']['measure_unit'] == 'g':
-                    measure_value = int(offer['measure']['value'])/1000
+                if offer['measure']['measure_unit'] == 'g' or offer['measure']['measure_unit'] == 'kg':
+                    measure_value = offer['measure']['value']
+                    if offer['measure']['measure_unit'] == 'g':
+                        measure_value = int(offer['measure']['value'])/1000
 
-                etree.SubElement(offerElem, 'weight').text = str(measure_value)
+                    etree.SubElement(offerElem, 'weight').text = str(measure_value)
+
+            if 'measure' in offer and 'measure_unit' in offer['measure']:
+                etree.SubElement(offerElem, 'measureUnit').text = offer['measure']['value']
+                etree.SubElement(offerElem, 'measure').text = offer['measure']['measure_unit']
+            
+            # add param
+            if 'nutrients' in offer and len(offer['nutrients']):
+                for p_item in offer['nutrients'].items():
+                    etree.SubElement(offerElem, 'param', name=p_item[1]['name'], unit=p_item[1]['unit']).text = p_item[1]['value']
 
     # write file
     obj_xml = etree.tostring(doc, xml_declaration=True, encoding='utf-8')    
