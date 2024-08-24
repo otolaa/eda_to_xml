@@ -68,6 +68,15 @@ def main():
     t_input_region = t_color('[+] input id region: ', 3)
     get_region_id = input(t_input_region)
 
+    try:
+        rid = int(get_region_id)
+        if isinstance(rid, int) is False:
+            pc(f'[-] region is not integer ?!', 1)
+            return False
+    except Exception as e:
+        pc(f'[-] region is not integer ?!', 1)
+        return False
+
     pc(f'[+] brand_slug: {get_palce_slug}', color_num=6)
     pc(f'[+] region_id: {get_region_id}', color_num=6)
 
