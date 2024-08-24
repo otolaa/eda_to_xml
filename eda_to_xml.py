@@ -73,10 +73,10 @@ def main():
     tprint('EDA>>TO>>XML', font='bulbhead')
 
     t_input = t_color('[+] input slug: ', 3)
-    get_palce_slug = input(t_input)
+    get_palce_slug = input(t_input).strip()
 
     t_input_region = t_color('[+] input id region: ', 3)
-    get_region_id = input(t_input_region)
+    get_region_id = input(t_input_region).strip()
 
     if is_int(get_region_id) is False:
         pc(f'[-] region is not integer ?!', 1)
