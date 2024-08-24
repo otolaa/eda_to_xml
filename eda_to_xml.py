@@ -156,7 +156,7 @@ def main():
         id_category = str(m_items['id']) if 'id' in m_items else str(161803)        
         # add offer
         for offer in m_items['items']:
-            offerElem = etree.SubElement(offersElement, 'offer', id=str(offer['id']))
+            offerElem = etree.SubElement(offersElement, 'offer', id=str(offer['id']), available=str(offer['available']).lower())
             etree.SubElement(offerElem, 'name').text = offer['name']
             
             if 'description' in offer:
@@ -170,6 +170,21 @@ def main():
                 mGroupsIds = etree.SubElement(offerElem, 'modifiersGroupsIds')
                 for o_modifier in offer['optionsGroups']:
                     etree.SubElement(mGroupsIds, 'modifiersGroupId').text = str(o_modifier['id'])
+            
+            # add adult
+            if 'adult' in offer:
+                etree.SubElement(offerElem, 'adult').text = str(offer['adult']).lower()
+
+            # add weight in offer
+            if 'weight' in offer and 'measure' in offer:
+                ''' Единица измерения — килограммы. 
+                Можно дроби: разделитель — точка или запятая, 
+                не больше трех цифр после него. '''
+                measure_value = offer['measure']['value']
+                if offer['measure']['measure_unit'] == 'g':
+                    measure_value = int(offer['measure']['value'])/1000
+
+                etree.SubElement(offerElem, 'weight').text = str(measure_value)
 
     # write file
     obj_xml = etree.tostring(doc, xml_declaration=True, encoding='utf-8')    
