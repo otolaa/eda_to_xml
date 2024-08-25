@@ -67,6 +67,14 @@ def is_int(rid) -> bool:
     
     return True
 
+def is_float(lan_or_lon) -> float|bool:
+    try:
+        l_ = float(lan_or_lon.replace(',','.'))
+        if isinstance(l_, float):
+            return l_
+    except Exception as e:
+        return False
+
 def main():
     start = datetime.now()
     #--------- the code
@@ -82,11 +90,25 @@ def main():
         pc(f'[-] region is not integer ?!', 1)
         return False
 
+    t_lan = t_color('[+] input latitude: ', 3)
+    get_lan = is_float(input(t_lan).strip())
+
+    if get_lan is False:
+        pc(f'[-] latitude is not float ?!', 1)
+        return False
+
+    t_lon = t_color('[+] input longitude: ', 3)
+    get_lon = is_float(input(t_lon).strip())
+
+    if get_lon is False:
+        pc(f'[-] longitude is not float ?!', 1)
+        return False
+
     pc(f'[+] brand_slug: {get_palce_slug}', color_num=6)
     pc(f'[+] region_id: {get_region_id}', color_num=6)
 
     # ----- place brand
-    url_brand_slug = f'https://eda.yandex.ru/eats/v1/eats-catalog/v2/brand/place?brand_slug={get_palce_slug}&region_id={get_region_id}'
+    url_brand_slug = f'https://eda.yandex.ru/eats/v1/eats-catalog/v2/brand/place?brand_slug={get_palce_slug}&region_id={get_region_id}&latitude={str(get_lan)}&longitude={str(get_lon)}'
     place = get_place(url_brand_slug, get_palce_slug)
     if place is False:
         pc("[-] place is False", 1)    
@@ -124,12 +146,6 @@ def main():
     # add currency
     currenciesElem = etree.SubElement(pageElementShop, 'currencies')
     etree.SubElement(currenciesElem, 'currency', id=place['currency']['code'], rate='1')
-
-    # add tags ?!
-    if 'tags' in place and len(place['tags']):
-        tags_elem = etree.SubElement(pageElementShop, 'tags')
-        for t_ in place['tags']:
-            etree.SubElement(tags_elem, 'tag', id=str(t_['id'])).text = t_['name']
 
     # add categories
     categoryElement = etree.SubElement(pageElementShop, 'categories')
