@@ -1,3 +1,5 @@
 __pycache__
 /json/*
+!/json/menu_tashir_gnorv.json
 /xml/*
+!/xml/x_tashir_gnorv_1.xml

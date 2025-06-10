@@ -1,4 +1,4 @@
-## eda.yandex to xml - file
+# eda.yandex to xml - file
 
 This script parse detail - page and write to xml - file
 
@@ -19,7 +19,15 @@ https://eda.yandex.ru/web-api/initial-server-data?lang=ru&asset=desktop&serviceB
 https://eda.yandex.ru/r/tashir_gnorv?placeSlug=tashir_2d8q5
 ```
 
-Start script
+## start script
 ```
 $ python3 eda_to_xml.py
+```
+
+## example input
+```
+[+] input slug: tashir_gnorv
+[+] input id region: 1
+[+] input latitude: 55.65679838701938
+[+] input longitude: 37.38758568101073
 ```
