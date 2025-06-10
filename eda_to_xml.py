@@ -190,9 +190,11 @@ def main():
             if 'description' in offer:
                 etree.SubElement(offerElem, 'description').text = offer['description']
             
-            etree.SubElement(offerElem, 'price').text = str(offer['price'])
-            etree.SubElement(offerElem, 'picture').text = f"https://eda.yandex{str(offer['picture']['uri']).replace('{w}','400').replace('{h}','400')}"
+            etree.SubElement(offerElem, 'price').text = str(offer['price'])            
             etree.SubElement(offerElem, 'categoryId').text = id_category
+
+            if 'picture' in offer:
+                etree.SubElement(offerElem, 'picture').text = f"https://eda.yandex{str(offer['picture']['uri']).replace('{w}','400').replace('{h}','400')}"
 
             if 'optionsGroups' in offer and len(offer['optionsGroups']):
                 mGroupsIds = etree.SubElement(offerElem, 'modifiersGroupsIds')
